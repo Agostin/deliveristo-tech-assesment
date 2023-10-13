@@ -12,7 +12,7 @@ export const ImageDetailModal = ({ imageAlt, imageUrl, isLoading }: IImageDetail
   const [imageSrc, setImageSrc] = useState<string>(imageUrl)
 
   useEffect(() => {
-      setImageSrc(imageUrl)
+    setImageSrc(imageUrl)
   }, [imageUrl])
   
   return <div className={`flex inset-0 justify-center items-center m-auto bg-black/40 ${imageSrc ? 'fixed' : 'hidden'}`}>

@@ -5,8 +5,9 @@ import './App.css'
 
 const App = () => {
   const [breeds, setBreeds] = useState<string[]>([])
+  const [filteredBreeds, setFilteredBreeds] = useState<string[]>([])
   const [selectedBreed, setSelectedBreed] = useState<string | null>(null)
-  const [selectedBreedImg, setSelectedBreedImg] = useState<string | null>(null)
+  const [selectedBreedImg, setSelectedBreedImg] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   
@@ -35,7 +36,9 @@ const App = () => {
     const data = await response.json()
 
     if (response.status === 200 && data.status === 'success') {
-      setBreeds(parseBreeds(data.message))
+      const list = parseBreeds(data.message)
+      setBreeds(list)
+      setFilteredBreeds(list)
     } else {
       setError(data.message)
     }
@@ -54,19 +57,35 @@ const App = () => {
     }
     setIsLoading(false)
   }
+
+  const filterResults = (evt) => {
+    const term = evt.target.value
+    if (term.length > 2) {
+      setFilteredBreeds(breeds.filter((b: string) => b.indexOf(term) !== -1))
+    } else {
+      setFilteredBreeds(breeds)
+    }
+  }
   
   useEffect(() => {
     fetchDogsBreeds()
   }, [])
   
   return (
-    <div className='container m-auto py-10'>
-      <h1 className='text-3xl'>Dogs list</h1>
+    <div className='container m-auto px-4 py-10'>
+      <div className='flex flex-col items-center justify-between sm:flex-row'>
+        <h1 className='text-3xl w-full'>Dogs list</h1>
+        <input className='rounded-md shadow-sm border border-gray-300 outline-none px-3 py-1 w-full mt-2 mb-4 sm:max-w-xs sm:m-0' type="search" placeholder='Search for a dog breed...' onChange={filterResults} />
+      </div>
       <ul className='mt-2'>
-        {breeds?.map(breed => <li className='border-b border-b-black-100 mb-2 py-1 text-lg cursor-pointer transition-colors duration-300 last:border-0 hover:text-green-600 hover:underline hover:underline-green-600' key={breed} onClick={()=> showRandomBreedImage(breed)}>{breedKeyToString(breed)}</li>)}
+        {filteredBreeds.map(breed =>
+          <li className='border-b border-b-black-100 mb-2 py-1 text-xl cursor-pointer transition-colors duration-300 last:border-0 hover:text-green-600 hover:underline hover:underline-green-600' key={breed} onClick={()=> showRandomBreedImage(breed)}>
+            {breedKeyToString(breed)}
+          </li>
+        )}
       </ul>
       
-      {selectedBreedImg && <ImageDetailModal imageUrl={selectedBreedImg} imageAlt={`A picture of a ${selectedBreed} dog`} isLoading={isLoading} />}
+      {<ImageDetailModal imageUrl={selectedBreedImg} imageAlt={`A picture of a ${selectedBreed} dog`} isLoading={isLoading} />}
     </div>
   )
 }
