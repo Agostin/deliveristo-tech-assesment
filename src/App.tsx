@@ -32,34 +32,50 @@ const App = () => {
   }
 
   const fetchDogsBreeds = async () => {
-    const response = await fetch(`${API_BASE_PATH}/breeds/list/all`)
-    const data = await response.json()
+    try {
+      const response = await fetch(`${API_BASE_PATH}/breeds/list/all`)
+      const data = await response.json()
 
-    if (response.status === 200 && data.status === 'success') {
-      const list = parseBreeds(data.message)
-      setBreeds(list)
-      setFilteredBreeds(list)
-    } else {
-      setError(data.message)
+      if (response.status === 200 && data.status === 'success') {
+        const list = parseBreeds(data.message)
+        setBreeds(list)
+        setFilteredBreeds(list)
+      } else {
+        setError(data.message)
+        setBreeds([])
+      }
+    } catch (error) {
+      setError('Oops! Something went wrong while loading breeds')
+      setBreeds([])
     }
   }
 
   const showRandomBreedImage = async (breed: string) => {
     setIsLoading(true)
-    const response = await fetch(`${API_BASE_PATH}/breed/${breed}/images/random`)
-    const data = await response.json()
-    
-    if (response.status === 200 && data.status === 'success') {
-      setSelectedBreedImg(data.message)
-      setSelectedBreed(breedKeyToString(breed))
-    } else {
-      setError(data.message)
+
+    try {
+      const response = await fetch(`${API_BASE_PATH}/breed/${breed}/images/random`)
+      const data = await response.json()
+      
+      if (response.status === 200 && data.status === 'success') {
+        setSelectedBreedImg(data.message)
+        setSelectedBreed(breedKeyToString(breed))
+      } else {
+        setError(data.message)
+        setSelectedBreedImg('')
+        setSelectedBreed(null)
+      }
+      setIsLoading(false)
+    } catch (error) {
+      setError('Oops! Something went wrong...')
+      setIsLoading(false)
+      setSelectedBreedImg('')
+      setSelectedBreed(null)
     }
-    setIsLoading(false)
   }
 
-  const filterResults = (evt) => {
-    const term = evt.target.value
+  const filterResults = ({ target }) => {
+    const term = target.value
     if (term.length > 2) {
       setFilteredBreeds(breeds.filter((b: string) => b.indexOf(term) !== -1))
     } else {
@@ -77,8 +93,11 @@ const App = () => {
         <h1 className='text-3xl w-full'>Dogs list</h1>
         <input className='rounded-md shadow-sm border border-gray-300 outline-none px-3 py-1 w-full mt-2 mb-4 sm:max-w-xs sm:m-0' type="search" placeholder='Search for a dog breed...' onChange={filterResults} />
       </div>
+      
+      {error && <p>{error}</p>}
+      
       <ul className='mt-2'>
-        {filteredBreeds.map(breed =>
+        {filteredBreeds?.map(breed =>
           <li className='border-b border-b-black-100 mb-2 py-1 text-xl cursor-pointer transition-colors duration-300 last:border-0 hover:text-green-600 hover:underline hover:underline-green-600' key={breed} onClick={()=> showRandomBreedImage(breed)}>
             {breedKeyToString(breed)}
           </li>
