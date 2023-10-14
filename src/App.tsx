@@ -75,8 +75,8 @@ const App = () => {
     }
   }
 
-  const filterResults = ({ target }) => {
-    const term = target.value
+  const filterResults = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const term = e.target.value
     if (term.length > 2) {
       setFilteredBreeds(breeds.filter((b: string) => b.indexOf(term) !== -1))
     } else {
