@@ -1,1 +1,11 @@
-/* Styles go here */
+html, body, #root {
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+:root { font-family: 'Inter', sans-serif; }
+
+@supports (font-variation-settings: normal) {
+  :root { font-family: 'Inter var', sans-serif; }
+}

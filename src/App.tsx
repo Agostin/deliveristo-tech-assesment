@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { ImageDetailModal } from './components/ImageDetailModal'
+import { PiDogFill } from 'react-icons/pi'
 
 import './App.css'
 
@@ -88,23 +89,30 @@ const App = () => {
   }, [])
   
   return (
-    <div className='container m-auto px-4 py-10'>
-      <div className='flex flex-col items-center justify-between sm:flex-row'>
-        <h1 className='text-3xl w-full'>Dogs list</h1>
-        <input className='rounded-md shadow-sm border border-gray-300 outline-none px-3 py-1 w-full mt-2 mb-4 sm:max-w-xs sm:m-0' type="search" placeholder='Search for a dog breed...' onChange={filterResults} />
+    <div className='flex items-center justify-center m-auto h-full bg-gray-200'>
+      <div className='container m-auto px-4 py-10 lg:max-w-5xl'>
+        <div className='flex flex-col items-center justify-between sm:flex-row'>
+          <h1 className='flex items-center text-3xl w-full'>
+            <PiDogFill className="mr-2" size={48} /> Dogs List</h1>
+          <input className='rounded-md shadow-sm border border-gray-300 outline-none px-3 py-1 w-full h-10 mt-2 mb-4 sm:max-w-xs sm:m-0' type="search" placeholder='Search for a dog breed...' onChange={filterResults} />
+        </div>
+        
+        {error && <p>{error}</p>}
+        
+        {filteredBreeds.length && 
+          <ul className='mt-6 shadow-sm border-gray-300 bg-white py-4 px-8 rounded-xl'>
+            {filteredBreeds?.map(breed =>
+              <li
+                key={breed} onClick={()=> showRandomBreedImage(breed)}
+                className='py-3 border-b border-b-gray-300 text-xl cursor-pointer transition-colors duration-300 hover:text-cyan-500 last:border-b-0'>
+                {breedKeyToString(breed)}
+              </li>
+            )}
+          </ul>
+        }
+        
+        {<ImageDetailModal imageUrl={selectedBreedImg} imageAlt={`A picture of a ${selectedBreed} dog`} isLoading={isLoading} />}
       </div>
-      
-      {error && <p>{error}</p>}
-      
-      <ul className='mt-2'>
-        {filteredBreeds?.map(breed =>
-          <li className='border-b border-b-black-100 mb-2 py-1 text-xl cursor-pointer transition-colors duration-300 last:border-0 hover:text-green-600 hover:underline hover:underline-green-600' key={breed} onClick={()=> showRandomBreedImage(breed)}>
-            {breedKeyToString(breed)}
-          </li>
-        )}
-      </ul>
-      
-      {<ImageDetailModal imageUrl={selectedBreedImg} imageAlt={`A picture of a ${selectedBreed} dog`} isLoading={isLoading} />}
     </div>
   )
 }
