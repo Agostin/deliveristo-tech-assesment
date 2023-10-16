@@ -82,7 +82,7 @@ const App = () => {
         
         {
           error ? <p data-testid="error-wrapper">{error}</p> :
-          filteredBreeds?.length && 
+          filteredBreeds.length ? 
             <ul className='mt-6 shadow-sm border-gray-300 bg-white py-4 px-8 rounded-xl'>
               {filteredBreeds?.map(breed =>
                 <li
@@ -92,7 +92,8 @@ const App = () => {
                   {breedKeyToString(breed)}
                 </li>
               )}
-            </ul>
+            </ul> :
+            <h3>No matching breed found with the typed term. Please retry!</h3> 
         }
         
         {<ImageDetailModal imageUrl={selectedBreedImg} imageAlt={`A picture of a ${selectedBreed || ''} dog`} isLoading={isLoading} />}
