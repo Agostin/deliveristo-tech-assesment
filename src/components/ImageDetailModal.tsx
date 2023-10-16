@@ -15,10 +15,10 @@ export const ImageDetailModal = ({ imageAlt, imageUrl, isLoading }: IImageDetail
     setImageSrc(imageUrl)
   }, [imageUrl])
   
-  return <div className={`flex inset-0 justify-center items-center m-auto bg-black/40 ${imageSrc ? 'fixed' : 'hidden'}`}>
+  return <div data-testid="ImageDetailModal-wrapper" className={`flex inset-0 justify-center items-center m-auto bg-black/40 ${imageSrc ? 'fixed' : 'hidden'}`}>
     <div className="relative border rounded-lg p-2 max-w-2xl bg-white">
       <button className='absolute -top-4 -right-4 bg-white p-1 rounded-full' onClick={() => setImageSrc('')}><RxCross2 size={20} /></button>
-      { isLoading ? <BiLoader className='animate-spin' size={64} /> : <img className="w-full h-full" src={imageSrc} alt={imageAlt} /> }
+      { isLoading ? <BiLoader data-testid="ImageDetailModal-loader" className='animate-spin' size={64} /> : <img className="w-full h-full" src={imageSrc} alt={imageAlt} /> }
     </div>
   </div>
 }

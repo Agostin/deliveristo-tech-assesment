@@ -3,6 +3,7 @@ import { ImageDetailModal } from './components/ImageDetailModal'
 import { PiDogFill } from 'react-icons/pi'
 
 import './App.css'
+import { breedKeyToString, parseBreeds } from './utils/functions'
 
 const App = () => {
   const [breeds, setBreeds] = useState<string[]>([])
@@ -13,24 +14,6 @@ const App = () => {
   const [error, setError] = useState<string | null>(null)
   
   const API_BASE_PATH = 'https://dog.ceo/api';
-
-  const breedKeyToString = (key: string) => {
-    const baseString = key.replace(/\//g, ' ')
-    return baseString.charAt(0).toUpperCase() + baseString.slice(1)
-  }
-
-  const parseBreeds = (breedsMap: Record<string, string[]>) => {
-    let breeds: string[] = []
-    Object.keys(breedsMap).forEach((bk: string) => {
-      if (!breedsMap[bk].length) breeds.push(bk)
-      else {
-        const subBreeds = breedsMap[bk].flatMap((sbk: string) => `${bk}/${sbk}`)
-        breeds = breeds.concat(subBreeds)
-      }
-    });
-
-    return breeds
-  }
 
   const fetchDogsBreeds = async () => {
     try {
@@ -44,10 +27,12 @@ const App = () => {
       } else {
         setError(data.message)
         setBreeds([])
+        setFilteredBreeds([])
       }
     } catch (error) {
       setError('Oops! Something went wrong while loading breeds')
       setBreeds([])
+      setFilteredBreeds([])
     }
   }
 
@@ -97,12 +82,13 @@ const App = () => {
           <input className='rounded-md shadow-sm border border-gray-300 outline-none px-3 py-1 w-full h-10 mt-2 mb-4 sm:max-w-xs sm:m-0' type="search" placeholder='Search for a dog breed...' onChange={filterResults} />
         </div>
         
-        {error && <p>{error}</p>}
+        {error && <p data-testid="error-wrapper">{error}</p>}
         
         {filteredBreeds.length && 
           <ul className='mt-6 shadow-sm border-gray-300 bg-white py-4 px-8 rounded-xl'>
             {filteredBreeds?.map(breed =>
               <li
+                data-testid="dogs-breed-wrapper"
                 key={breed} onClick={()=> showRandomBreedImage(breed)}
                 className='py-3 border-b border-b-gray-300 text-xl cursor-pointer transition-colors duration-300 hover:text-cyan-500 last:border-b-0'>
                 {breedKeyToString(breed)}
@@ -111,7 +97,7 @@ const App = () => {
           </ul>
         }
         
-        {<ImageDetailModal imageUrl={selectedBreedImg} imageAlt={`A picture of a ${selectedBreed} dog`} isLoading={isLoading} />}
+        {<ImageDetailModal imageUrl={selectedBreedImg} imageAlt={`A picture of a ${selectedBreed || ''} dog`} isLoading={isLoading} />}
       </div>
     </div>
   )
